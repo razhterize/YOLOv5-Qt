@@ -2,7 +2,6 @@ import sys
 import threading
 import platform
 import time
-from matplotlib import style
 
 import pkg_resources as pkg
 
@@ -18,6 +17,7 @@ from settings_dialog import SettingsDialog
 from widget_camera import WidgetCamera
 from widget_info import WidgetInfo
 from widget_config import WidgetConfig
+from jetson_stuff import JetsonGPIO
 
 class MainWindow(QMainWindow):
     config_error = pyqtSignal(str)
@@ -41,6 +41,8 @@ class MainWindow(QMainWindow):
         gb.clean_log()
         gb.init_config()
 
+        self.led_state = False
+
         self.camera = WidgetCamera()        #Initialize Camera
         self.info = WidgetInfo()            # Information Panel
         self.config = WidgetConfig()        # YOLO Configuration
@@ -49,6 +51,7 @@ class MainWindow(QMainWindow):
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
+        self.btn_lighting = QPushButton()
 
         self.config_error.connect(self.slot_msg_dialog)
 
@@ -72,12 +75,16 @@ class MainWindow(QMainWindow):
         self.btn_capture.setFixedHeight(60)
         self.btn_capture.clicked.connect(self.camera.image_capture)
 
+        self.btn_lighting.setFixedHeight(30)
+        self.btn_lighting.clicked.connect(self.lighting)
+
         vbox1 = QVBoxLayout()
         vbox1.setContentsMargins(0,0,0,0)
         vbox1.addWidget(self.info)
         vbox1.addWidget(self.config)
         vbox1.addStretch()
         vbox1.addLayout(hbox)
+        vbox1.addWidget(self.btn_lighting)
         vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
 
@@ -171,6 +178,14 @@ class MainWindow(QMainWindow):
         msg.setText(text)
         msg.exec()
     
+    def lighting(self):
+        if self.state is False:
+            self.state = True
+            self.JetsonGPIO.on_off()
+        if self.state is True:
+            self.state = False
+            self.JetsonGPIO.on_off()
+
     def update_status(self, text, ok=False):
         size = 15
         min_width = f'min-width: {size}px;'         # Minimum Width
