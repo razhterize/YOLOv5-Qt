@@ -17,7 +17,7 @@ from settings_dialog import SettingsDialog
 from widget_camera import WidgetCamera
 from widget_info import WidgetInfo
 from widget_config import WidgetConfig
-from jetson_stuff import JetsonGPIO
+#from jetson_stuff import JetsonGPIO
 
 class MainWindow(QMainWindow):
     config_error = pyqtSignal(str)
@@ -178,13 +178,13 @@ class MainWindow(QMainWindow):
         msg.setText(text)
         msg.exec()
     
-    def lighting(self):
-        if self.state is False:
-            self.state = True
-            self.JetsonGPIO.on_off()
-        if self.state is True:
-            self.state = False
-            self.JetsonGPIO.on_off()
+    # def lighting(self):
+    #     if self.state is False:
+    #         self.state = True
+    #         self.JetsonGPIO.on_off()
+    #     if self.state is True:
+    #         self.state = False
+    #         self.JetsonGPIO.on_off()
 
     def update_status(self, text, ok=False):
         size = 15
