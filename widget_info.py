@@ -7,7 +7,6 @@ Date: 2021/11/5
 Desc: 信息板块
 """
 
-#from PySide2.QtWidgets import (QGroupBox, QLabel, QWidget, QVBoxLayout)
 from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout
 
 class WidgetInfo(QWidget):

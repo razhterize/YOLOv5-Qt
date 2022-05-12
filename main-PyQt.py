@@ -76,6 +76,8 @@ class MainWindow(QMainWindow):
         self.btn_capture.clicked.connect(self.camera.image_capture)
 
         self.btn_lighting.setFixedHeight(30)
+        self.btn_lighting.setText('Light Off')
+        self.state = False
         self.btn_lighting.clicked.connect(self.lighting)
 
         vbox1 = QVBoxLayout()
@@ -178,13 +180,15 @@ class MainWindow(QMainWindow):
         msg.setText(text)
         msg.exec()
     
-    # def lighting(self):
-    #     if self.state is False:
-    #         self.state = True
-    #         self.JetsonGPIO.on_off()
-    #     if self.state is True:
-    #         self.state = False
-    #         self.JetsonGPIO.on_off()
+    def lighting(self):
+        if self.state is False:
+            self.state = True
+            #self.JetsonGPIO.on_off()
+            self.btn_lighting.setText('Light On')
+        elif self.state is True:
+            self.btn_lighting.setText('Light Off')
+            self.state = False
+            #self.JetsonGPIO.on_off()
 
     def update_status(self, text, ok=False):
         size = 15

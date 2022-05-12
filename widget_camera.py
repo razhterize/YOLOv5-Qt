@@ -11,9 +11,6 @@ from pathlib import Path
 import time
 
 import cv2
-#from PySide2.QtCore import QRect, QTimer
-#from PySide2.QtGui import QPainter, QColor, Qt, QPixmap, QImage, QFont, QBrush, QPen, QStaticText
-#from PySide2.QtWidgets import QWidget
 
 from PyQt5.QtCore import QRect, Qt, QTimer
 from PyQt5.QtGui import QPainter, QColor, QPixmap, QImage, QFont, QBrush, QPen, QStaticText
@@ -197,9 +194,10 @@ class WidgetCamera(QWidget):
         qp.drawRect(rect)
 
         sw, sh = self.width(), self.height()  # 图像窗口宽高
+    
 
-        #if not self.opened:
-        #    qp.drawPixmap(sw / 2 - 100, sh / 2 - 100, 200, 200, QPixmap('img/video.svg'))
+        # if not self.opened:
+        #     qp.drawPixmap(sw/2-100, sh/2-100, 200, 200, QPixmap('img/video.svg'))
 
         # 画图
         if self.opened and self.image is not None:

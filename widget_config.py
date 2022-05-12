@@ -7,7 +7,6 @@ Date: 2020/11/3
 Desc: 配置界面
 """
 
-#from PySide2.QtWidgets import (QGroupBox, QGridLayout, QCheckBox, QLabel, QLineEdit, QPushButton, QFileDialog, QWidget, QVBoxLayout)
 from PyQt5.QtWidgets import QGroupBox, QGridLayout, QCheckBox, QLabel, QLineEdit, QPushButton, QFileDialog, QWidget, QVBoxLayout
 import gb
 
