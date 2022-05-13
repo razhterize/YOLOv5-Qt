@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        py_min = '3.8.0'
+        py_min = '3.6.9'
         py_current = platform.python_version()
         py_current, py_min =(pkg.parse_version(x) for x in(py_current, py_min))
         if py_current < py_min:
@@ -109,11 +109,11 @@ class MainWindow(QMainWindow):
         screen = QDesktopWidget().screenGeometry(self)
         available = QDesktopWidget().availableGeometry(self)
         title_height = self.style().pixelMetric(QStyle.PM_TitleBarHeight)
-        if screen.width() < 1280 or screen.height() < 768:
-            self.setWindowState(QWindow.showMaximized)                              # Set Maximized Window for small resolution
+        if screen.width() < 1920 or screen.height() < 1080:
+            QWindow.showMaximized                              # Set Maximized Window for small resolution
             self.setFixedSize(available.width(), available.height()-title_height)   # Set maximum Window size according to screen
         else:
-            self.setMinimumSize(QSize(1100, 700))       # Minimum Width and Height
+            self.setMinimumSize(QSize(1024, 600))       # Minimum Width and Height
         self.show()
 
     def open_close_camera(self):
