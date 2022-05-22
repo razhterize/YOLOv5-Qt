@@ -17,7 +17,6 @@ from settings_dialog import SettingsDialog
 from widget_camera import WidgetCamera
 from widget_info import WidgetInfo
 from widget_config import WidgetConfig
-#from jetson_stuff import JetsonGPIO
 import Jetson.GPIO as GPIO
 
 class MainWindow(QMainWindow):
