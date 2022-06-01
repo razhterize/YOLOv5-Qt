@@ -17,7 +17,7 @@ from settings_dialog import SettingsDialog
 from widget_camera import WidgetCamera
 from widget_info import WidgetInfo
 from widget_config import WidgetConfig
-import Jetson.GPIO as GPIO
+#import Jetson.GPIO as GPIO
 
 class MainWindow(QMainWindow):
     config_error = pyqtSignal(str)
@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
         self.btn_lighting = QPushButton()
+        self.bat_status = QIcon()
 
         self.config_error.connect(self.slot_msg_dialog)
 
@@ -181,17 +182,18 @@ class MainWindow(QMainWindow):
         msg.exec()
     
     def lighting(self):
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(7, GPIO.OUT)
-        if self.state is False:
-            self.state = True
-            self.btn_lighting.setText('Light Off')
-            GPIO.output(7, GPIO.HIGH)
-        elif self.state is True:
-            self.btn_lighting.setText('Light On')
-            self.state = False
-            GPIO.output(7, GPIO.LOW)
+         pass
+    #     GPIO.setwarnings(False)
+    #     GPIO.setmode(GPIO.BOARD)
+    #     GPIO.setup(7, GPIO.OUT)
+    #     if self.state is False:
+    #         self.state = True
+    #         self.btn_lighting.setText('Light Off')
+    #         GPIO.output(7, GPIO.HIGH)
+    #     elif self.state is True:
+    #         self.btn_lighting.setText('Light On')
+    #         self.state = False
+    #         GPIO.output(7, GPIO.LOW)
 
     def update_status(self, text, ok=False):
         size = 15
