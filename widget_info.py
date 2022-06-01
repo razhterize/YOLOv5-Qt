@@ -23,7 +23,6 @@ class WidgetInfo(QWidget):
         self.bat_label.setPixmap(self.pixmap_src.scaled(40, 20))
 
         self.label_fps = QLabel('FPS: ')
-        # vbox.addWidget(self.label_fps)
         hbox.addWidget(self.label_fps)
         hbox.addWidget(self.bat_label)
         self.bat_label.setAlignment(Qt.AlignRight)
