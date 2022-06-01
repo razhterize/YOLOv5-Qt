@@ -6,7 +6,7 @@ import time
 import pkg_resources as pkg
 
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtGui import QIcon, QWindow
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel
 
 import msg_box
@@ -52,7 +52,6 @@ class MainWindow(QMainWindow):
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
         self.btn_lighting = QPushButton()
-        self.bat_status = QIcon()
 
         self.config_error.connect(self.slot_msg_dialog)
 

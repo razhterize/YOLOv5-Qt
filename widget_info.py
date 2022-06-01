@@ -6,20 +6,30 @@ Email: mxy493@qq.com
 Date: 2021/11/5
 Desc: 信息板块
 """
-
-from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout, QHBoxLayout
 
 class WidgetInfo(QWidget):
     def __init__(self):
         super(WidgetInfo, self).__init__()
 
+        self.img_src = 'img/bat-half.png'
+
+        hbox = QHBoxLayout()
         vbox = QVBoxLayout()
+        self.pixmap_src = QPixmap(self.img_src)
+        self.bat_label = QLabel()
+        self.bat_label.setPixmap(self.pixmap_src.scaled(40, 20))
 
         self.label_fps = QLabel('FPS: ')
-        vbox.addWidget(self.label_fps)
+        # vbox.addWidget(self.label_fps)
+        hbox.addWidget(self.label_fps)
+        hbox.addWidget(self.bat_label)
+        self.bat_label.setAlignment(Qt.AlignRight)
 
         box = QGroupBox()
-        box.setLayout(vbox)
+        box.setLayout(hbox)
 
         _vbox = QVBoxLayout()
         _vbox.setContentsMargins(0, 0, 0, 0)
