@@ -17,6 +17,7 @@ from settings_dialog import SettingsDialog
 from widget_camera import WidgetCamera
 from widget_info import WidgetInfo
 from widget_config import WidgetConfig
+from jetson_stuff import Jetson
 #import Jetson.GPIO as GPIO
 
 class MainWindow(QMainWindow):
@@ -52,6 +53,7 @@ class MainWindow(QMainWindow):
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
         self.btn_lighting = QPushButton()
+        self.jetson = Jetson()
 
         self.config_error.connect(self.slot_msg_dialog)
 
@@ -78,7 +80,7 @@ class MainWindow(QMainWindow):
         self.btn_lighting.setFixedHeight(30)
         self.btn_lighting.setText('Light Off')
         self.state = False
-        self.btn_lighting.clicked.connect(self.lighting)
+        self.btn_lighting.clicked.connect(Jetson.lighting)
 
         vbox1 = QVBoxLayout()
         vbox1.setContentsMargins(0,0,0,0)
@@ -180,8 +182,8 @@ class MainWindow(QMainWindow):
         msg.setText(text)
         msg.exec()
     
-    def lighting(self):
-         pass
+    #def lighting(self):
+    #     pass
     #     GPIO.setwarnings(False)
     #     GPIO.setmode(GPIO.BOARD)
     #     GPIO.setup(7, GPIO.OUT)
@@ -222,6 +224,9 @@ class MainWindow(QMainWindow):
         self.info.update_fps(self.camera.fps)
         YOLOGGER.info('Stop update and print fps')
 
+    def battery(self):
+        self.jetson.battery_indicator()
+        
     def resizeEvent(self, event):
         self.update()
 
