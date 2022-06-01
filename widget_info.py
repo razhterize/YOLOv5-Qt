@@ -38,3 +38,9 @@ class WidgetInfo(QWidget):
 
     def update_fps(self, fps):
         self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
+    
+    def update_bat_status(self, src):
+        img_src = src
+        self.pixmap_src = QPixmap(img_src)
+        self.bat_label.setPixmap(self.pixmap_src.scaled(40, 20))
+    
