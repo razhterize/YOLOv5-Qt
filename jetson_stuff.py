@@ -6,7 +6,7 @@ from widget_info import WidgetInfo
 class Jetson():
     def __init__(self):
         super(Jetson, self).__init__()
-        GPIO.setWarnings(False)
+        GPIO.setwarnings(False)
         self.jetson_info = WidgetInfo()
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(7, GPIO.OUT)
