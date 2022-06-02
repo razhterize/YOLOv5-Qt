@@ -8,7 +8,7 @@ Desc: 信息板块
 """
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 
 class WidgetInfo(QWidget):
     def __init__(self):
@@ -17,7 +17,6 @@ class WidgetInfo(QWidget):
         self.img_src = 'img/bat-half.png'
 
         hbox = QHBoxLayout()
-        vbox = QVBoxLayout()
         self.pixmap_src = QPixmap(self.img_src)
         self.bat_label = QLabel()
         self.bat_label.setPixmap(self.pixmap_src.scaled(40, 20))
@@ -42,4 +41,8 @@ class WidgetInfo(QWidget):
         img_src = src
         self.pixmap_src = QPixmap(img_src)
         self.bat_label.setPixmap(self.pixmap_src.scaled(40, 20))
+
+ 
+
+
     
