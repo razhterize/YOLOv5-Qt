@@ -6,7 +6,7 @@ import time
 import pkg_resources as pkg
 
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel
 
 import msg_box
@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
-        self.btn_lighting = QPushButton()
+        #self.btn_lighting = QPushButton()
         self.jetson = Jetson()
 
         self.config_error.connect(self.slot_msg_dialog)
@@ -70,13 +70,11 @@ class MainWindow(QMainWindow):
         self.btn_camera.clicked.connect(self.open_close_camera)
         self.btn_camera.setFixedHeight(60)
 
+        self.jetson.state = False
+
         self.btn_capture.setEnabled(False)
         self.btn_capture.setFixedHeight(60)
         self.btn_capture.clicked.connect(self.camera.image_capture)
-
-        self.btn_lighting.setFixedHeight(30)
-        self.btn_lighting.setText('Light On')
-        self.btn_lighting.clicked.connect(Jetson.lighting)
 
         vbox1 = QVBoxLayout()
         vbox1.setContentsMargins(0,0,0,0)
@@ -84,7 +82,7 @@ class MainWindow(QMainWindow):
         vbox1.addWidget(self.config)
         vbox1.addStretch()
         vbox1.addLayout(hbox)
-        vbox1.addWidget(self.btn_lighting)
+        vbox1.addWidget(self.jetson.btn_lighting)
         vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
 
@@ -177,19 +175,6 @@ class MainWindow(QMainWindow):
         msg = msg_box.MsgWarning()
         msg.setText(text)
         msg.exec()
-    
-    #def lighting(self):
-    #     GPIO.setwarnings(False)
-    #     GPIO.setmode(GPIO.BOARD)
-    #     GPIO.setup(7, GPIO.OUT)
-    #     if self.state is False:
-    #         self.state = True
-    #         self.btn_lighting.setText('Light Off')
-    #         GPIO.output(7, GPIO.HIGH)
-    #     elif self.state is True:
-    #         self.btn_lighting.setText('Light On')
-    #         self.state = False
-    #         GPIO.output(7, GPIO.LOW)
 
     def update_status(self, text, ok=False):
         size = 15
@@ -218,9 +203,6 @@ class MainWindow(QMainWindow):
             time.sleep(0.2)
         self.info.update_fps(self.camera.fps)
         YOLOGGER.info('Stop update and print fps')
-
-    def battery(self):
-        self.jetson.battery_indicator()
         
     def resizeEvent(self, event):
         self.update()
@@ -233,7 +215,6 @@ def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
-    GPIO.cleanup()
 
 if __name__ == '__main__':
     main()

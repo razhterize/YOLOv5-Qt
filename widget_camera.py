@@ -205,7 +205,7 @@ class WidgetCamera(QWidget):
             self.scale = sw / iw if sw / iw < sh / ih else sh / ih  # 缩放比例
             px = round((sw - iw * self.scale) / 2)
             py = round((sh - ih * self.scale) / 2)
-            qimage = QImage(self.image.data, iw, ih, 3 * iw, QImage.Format_BGR888)  # 转QImage
+            qimage = QImage(self.image.data, iw, ih, 3 * iw, QImage.Format_RGB888)  # 转QImage
             qpixmap = QPixmap.fromImage(qimage.scaled(sw, sh, Qt.KeepAspectRatio))  # 转QPixmap
             pw, ph = qpixmap.width(), qpixmap.height()  # 缩放后的QPixmap大小
             qp.drawPixmap(px, py, qpixmap)
