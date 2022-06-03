@@ -6,6 +6,7 @@ Email: mxy493@qq.com
 Date: 2021/11/5
 Desc: 信息板块
 """
+from main import MainWindow
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout, QHBoxLayout
@@ -13,6 +14,8 @@ from PyQt5.QtWidgets import QGroupBox, QLabel, QWidget, QVBoxLayout, QHBoxLayout
 class WidgetInfo(QWidget):
     def __init__(self):
         super(WidgetInfo, self).__init__()
+
+        main = MainWindow()
 
         self.img_src = 'img/bat-half.png'
 

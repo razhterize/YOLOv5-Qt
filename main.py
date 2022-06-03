@@ -18,7 +18,6 @@ from widget_camera import WidgetCamera
 from widget_info import WidgetInfo
 from widget_config import WidgetConfig
 from jetson_stuff import Jetson
-#import Jetson.GPIO as GPIO
 
 class MainWindow(QMainWindow):
     config_error = pyqtSignal(str)
@@ -41,8 +40,6 @@ class MainWindow(QMainWindow):
         gb.init_logger()
         gb.clean_log()
         gb.init_config()
-
-        self.led_state = False
 
         self.camera = WidgetCamera()        #Initialize Camera
         self.info = WidgetInfo()            # Information Panel
@@ -78,8 +75,7 @@ class MainWindow(QMainWindow):
         self.btn_capture.clicked.connect(self.camera.image_capture)
 
         self.btn_lighting.setFixedHeight(30)
-        self.btn_lighting.setText('Light Off')
-        self.state = False
+        self.btn_lighting.setText('Light On')
         self.btn_lighting.clicked.connect(Jetson.lighting)
 
         vbox1 = QVBoxLayout()
@@ -183,7 +179,6 @@ class MainWindow(QMainWindow):
         msg.exec()
     
     #def lighting(self):
-    #     pass
     #     GPIO.setwarnings(False)
     #     GPIO.setmode(GPIO.BOARD)
     #     GPIO.setup(7, GPIO.OUT)
