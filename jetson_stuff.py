@@ -2,7 +2,6 @@ import threading
 # import Jetson.GPIO as GPIO
 from gb import thread_runner
 from time import sleep
-from widget_info import WidgetInfo
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QPushButton
 
@@ -13,7 +12,6 @@ class Jetson():
         # GPIO.setwarnings(False)
         # threading.Thread(target=self.change_timer).start()
         
-        self.jetson_info = WidgetInfo()
         self.btn_lighting = QPushButton()
 
         # GPIO.setmode(GPIO.BOARD)

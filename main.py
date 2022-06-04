@@ -5,9 +5,9 @@ from time import time, sleep
 
 import pkg_resources as pkg
 
-from PyQt5.QtCore import QSize, pyqtSignal
+from PyQt5.QtCore import QSize, pyqtSignal, Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel, QGroupBox
 
 import msg_box
 import gb
@@ -15,9 +15,9 @@ from gb import YOLOGGER, thread_runner
 from info import APP_NAME, APP_VERSION
 from settings_dialog import SettingsDialog
 from widget_camera import WidgetCamera
-from widget_info import WidgetInfo
 from widget_config import WidgetConfig
 from jetson_stuff import Jetson
+
 
 class MainWindow(QMainWindow):
     config_error = pyqtSignal(str)
@@ -43,16 +43,20 @@ class MainWindow(QMainWindow):
 
         self.jetson = Jetson()
         self.camera = WidgetCamera()        #Initialize Camera
-        self.info = WidgetInfo()            # Information Panel
         self.config = WidgetConfig()        # YOLO Configuration
         self.settings = SettingsDialog()    
         self.status_icon = QLabel()
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
+
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
-        self.bat_label.setPixmap(QPixmap(self.img_src).scaled(40, 20))
+        self.bat_label.setPixmap(QPixmap(self.img_src).scaledToHeight(20))
+        self.bat_label.setScaledContents(True)
+        self.bat_label.setFixedHeight(20)
+        self.bat_label.setFixedWidth(40)
+        self.bat_label.setAlignment(Qt.AlignRight)
 
         self.load_model_thread = threading.Thread(target=self.load_yolo)
         self.load_model_thread.start()
@@ -61,10 +65,9 @@ class MainWindow(QMainWindow):
         self.settings.accepted.connect(self.reload)
 
         self.update_status('Loading Model....', False)
-        hbox = QHBoxLayout()
-        hbox.addWidget(self.status_icon)
-        hbox.addWidget(self.status_text)
-        hbox.addWidget(self.bat_label)
+        hboxMain = QHBoxLayout()
+        hboxMain.addWidget(self.status_icon)
+        hboxMain.addWidget(self.status_text)
 
         self.btn_camera.setEnabled(False)
         self.btn_camera.clicked.connect(self.open_close_camera)
@@ -76,12 +79,26 @@ class MainWindow(QMainWindow):
         self.btn_capture.setFixedHeight(60)
         self.btn_capture.clicked.connect(self.camera.image_capture)
 
+        hbox = QHBoxLayout()
+
+        self.label_fps = QLabel('FPS: ')
+        hbox.addWidget(self.label_fps)
+        hbox.addWidget(self.bat_label)
+
+        box = QGroupBox()
+        box.setLayout(hbox)
+
+        _vbox = QVBoxLayout()
+        _vbox.setContentsMargins(0, 0, 0, 0)
+        _vbox.addWidget(box)
+        self.setLayout(_vbox)
+
         vbox1 = QVBoxLayout()
         vbox1.setContentsMargins(0,0,0,0)
-        vbox1.addWidget(self.info)
+        vbox1.addWidget(box)
         vbox1.addWidget(self.config)
         vbox1.addStretch()
-        vbox1.addLayout(hbox)
+        vbox1.addLayout(hboxMain)
         vbox1.addWidget(self.jetson.btn_lighting)
         vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
@@ -226,7 +243,6 @@ class MainWindow(QMainWindow):
             self.bat_label.setPixmap(QPixmap(self.img_src))
             print('change3')
             sleep(2)
-
 
 def main():
     app = QApplication(sys.argv)
