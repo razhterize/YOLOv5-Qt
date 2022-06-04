@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
             self.setFixedSize(available.width(), available.height()-title_height)   # Set maximum Window size according to screen
         else:
             self.setMinimumSize(QSize(1024, 700))       # Minimum Width and Height
-        threading.Thread(target=self.change_timer).start()
+        threading.Thread(target=self.battery_indicator).start()
         self.show()
 
     def open_close_camera(self):
@@ -216,10 +216,11 @@ class MainWindow(QMainWindow):
     @thread_runner
     def update_info(self):
         YOLOGGER.info('Start update and print fps')
+        fps = self.camera.fps
         while self.camera.detecting:
-            self.info.update_fps(self.camera.fps)
+            self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
             time.sleep(0.2)
-        self.info.update_fps(self.camera.fps)
+        self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
         YOLOGGER.info('Stop update and print fps')
         
     def resizeEvent(self, event):
@@ -229,20 +230,18 @@ class MainWindow(QMainWindow):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
     
-    def change_timer(self):
+    def battery_indicator(self):
         while True:
-            self.img_src = 'img/bat-empty.png'
-            self.bat_label.setPixmap(QPixmap(self.img_src))
-            print('change1')
-            sleep(2)
-            self.img_src = 'img/bat-half.png'
-            self.bat_label.setPixmap(QPixmap(self.img_src))
-            print('change2')
-            sleep(2)
-            self.img_src = 'img/bat-full.png'
-            self.bat_label.setPixmap(QPixmap(self.img_src))
-            print('change3')
-            sleep(2)
+            if self.jetson.bat_status() == 'empty':
+                self.img_src = 'img/bat-empty.png'
+                pass
+            elif self.jetson.bat_status() == 'half':
+                self.img_src = 'img/bat-half.png'
+                pass
+            elif self.jetson.bat_status() == 'full':
+                self.img_src = 'img/bat-full.png'
+                pass
+            self.bat_label.setPixmap(self.img_src)
 
 def main():
     app = QApplication(sys.argv)
