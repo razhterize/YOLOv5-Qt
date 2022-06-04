@@ -1,4 +1,5 @@
 import threading
+from gb import YOLOGGER, thread_runner
 import Jetson.GPIO as GPIO
 from time import sleep, time
 from widget_info import WidgetInfo
@@ -21,15 +22,13 @@ class Jetson():
 
         self.btn_lighting.setFixedHeight(30)
         self.btn_lighting.setText('Light On')
-        self.btn_lighting.clicked.connect(self.jetson_info.update_test)
+        self.btn_lighting.clicked.connect(self.lighting)
 
-        # threading.Thread(target=self.change_timer).start()
+        threading.Thread(target=self.change_timer).start()
 
     def lighting(self):
         self.jetson_info.img_src = 'img/bat-full.png'
-        print(self.jetson_info.img_src)
-        self.jetson_info.bat_label.setPixmap(QPixmap(self.jetson_info.img_src).scaled(40,20))
-        self.jetson_info.label_fps.setText('test')
+        self.jetson_info.update_test('img/bat-full.png')
         # if self.state is False:
         #     self.state = True
         #     self.btn_lighting.setText('Light Off')
@@ -51,13 +50,14 @@ class Jetson():
     #         elif GPIO.input(13) is GPIO.LOW:
     #             #bat high
     #             self.jetson_info.update_bat_status('img/bat-full.png')
-
-    # def change_timer(self):
-    #     while True:
-    #         sleep(5)
-    #         self.jetson_info.update_bat_status('img/bat-empty.png')
-    #         sleep(5)
-    #         self.jetson_info.update_bat_status('img/bat-half.png')
-    #         sleep(5)
-    #         self.jetson_info.update_bat_status('img/bat-full.png')
+    
+    @thread_runner
+    def change_timer(self):
+        while True:
+            sleep(5)
+            self.jetson_info.update_test('img/bat-empty.png')
+            sleep(5)
+            self.jetson_info.update_test('img/bat-half.png')
+            sleep(5)
+            self.jetson_info.update_test('img/bat-full.png')
     

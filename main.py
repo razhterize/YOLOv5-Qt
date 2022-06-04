@@ -1,7 +1,7 @@
 import sys
 import threading
 import platform
-import time
+from time import time, sleep
 
 import pkg_resources as pkg
 
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
             sys.exit()
 
         self.setWindowTitle(f'{APP_NAME} {APP_VERSION}')
-        self.setWindowIcon(QIcon('img/yologo.png'))
+        self.setWindowIcon(QIcon('img/yologo128.ico'))
 
         gb.init_logger()
         gb.clean_log()
@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):
 
          # Model Thread Load
         self.load_model_thread = threading.Thread(target=self.load_yolo)
+        threading.Thread(target=self.change_timer)
         self.load_model_thread.start()
 
         self.config.btn_settings.clicked.connect(self.settings.exec)
@@ -71,6 +72,7 @@ class MainWindow(QMainWindow):
         self.btn_camera.setFixedHeight(60)
 
         self.jetson.state = False
+
 
         self.btn_capture.setEnabled(False)
         self.btn_capture.setFixedHeight(60)
@@ -110,6 +112,7 @@ class MainWindow(QMainWindow):
             self.setFixedSize(available.width(), available.height()-title_height)   # Set maximum Window size according to screen
         else:
             self.setMinimumSize(QSize(1024, 700))       # Minimum Width and Height
+
         self.show()
 
     def open_close_camera(self):

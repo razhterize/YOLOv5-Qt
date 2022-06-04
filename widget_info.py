@@ -14,7 +14,7 @@ class WidgetInfo(QWidget):
     def __init__(self):
         super(WidgetInfo, self).__init__()
 
-        self.img_src = 'img/bat-half.png'
+        self.img_src = 'img/bat-empty.png'
 
         hbox = QHBoxLayout()
         self.bat_label = QLabel()
@@ -22,7 +22,6 @@ class WidgetInfo(QWidget):
 
         self.label_fps = QLabel('FPS: ')
         hbox.addWidget(self.label_fps)
-        hbox.addWidget(self.bat_label)
         self.bat_label.setAlignment(Qt.AlignRight)
 
         box = QGroupBox()
@@ -31,14 +30,14 @@ class WidgetInfo(QWidget):
         _vbox = QVBoxLayout()
         _vbox.setContentsMargins(0, 0, 0, 0)
         _vbox.addWidget(box)
+        _vbox.addWidget(self.bat_label)
         self.setLayout(_vbox)
 
     def update_fps(self, fps):
         self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
 
-    def update_test(self):
-        self.img_src = 'img/bat-full.png'
-        print(self.img_src)
-        self.bat_label.setPixmap(QPixmap(self.img_src).scaled(40,20))
-        self.label_fps.setText('test')
-    
+    def update_test(self, src):
+        print(src)
+        pixmap = QPixmap(src)
+        self.bat_label.setPixmap(pixmap.scaled(40,20))
+        # self.update_fps(30)
