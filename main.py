@@ -1,12 +1,12 @@
 import sys
 import threading
 import platform
-import time
+from time import time, sleep
 
 import pkg_resources as pkg
 
 from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel
 
 import msg_box
@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         gb.clean_log()
         gb.init_config()
 
+        self.jetson = Jetson()
         self.camera = WidgetCamera()        #Initialize Camera
         self.info = WidgetInfo()            # Information Panel
         self.config = WidgetConfig()        # YOLO Configuration
@@ -49,12 +50,10 @@ class MainWindow(QMainWindow):
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
-        #self.btn_lighting = QPushButton()
-        self.jetson = Jetson()
+        self.img_src = 'img/bat-full.png'
+        self.bat_label = QLabel()
+        self.bat_label.setPixmap(QPixmap(self.img_src).scaled(40, 20))
 
-        self.config_error.connect(self.slot_msg_dialog)
-
-         # Model Thread Load
         self.load_model_thread = threading.Thread(target=self.load_yolo)
         self.load_model_thread.start()
 
@@ -65,6 +64,7 @@ class MainWindow(QMainWindow):
         hbox = QHBoxLayout()
         hbox.addWidget(self.status_icon)
         hbox.addWidget(self.status_text)
+        hbox.addWidget(self.bat_label)
 
         self.btn_camera.setEnabled(False)
         self.btn_camera.clicked.connect(self.open_close_camera)
@@ -110,6 +110,7 @@ class MainWindow(QMainWindow):
             self.setFixedSize(available.width(), available.height()-title_height)   # Set maximum Window size according to screen
         else:
             self.setMinimumSize(QSize(1024, 700))       # Minimum Width and Height
+        threading.Thread(target=self.change_timer).start()
         self.show()
 
     def open_close_camera(self):
@@ -210,6 +211,22 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
+    
+    def change_timer(self):
+        while True:
+            self.img_src = 'img/bat-empty.png'
+            self.bat_label.setPixmap(QPixmap(self.img_src))
+            print('change1')
+            sleep(2)
+            self.img_src = 'img/bat-half.png'
+            self.bat_label.setPixmap(QPixmap(self.img_src))
+            print('change2')
+            sleep(2)
+            self.img_src = 'img/bat-full.png'
+            self.bat_label.setPixmap(QPixmap(self.img_src))
+            print('change3')
+            sleep(2)
+
 
 def main():
     app = QApplication(sys.argv)
