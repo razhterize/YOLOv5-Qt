@@ -217,7 +217,7 @@ class MainWindow(QMainWindow):
         fps = self.camera.fps
         while self.camera.detecting:
             self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
-            time.sleep(0.2)
+            sleep(0.2)
         self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
         YOLOGGER.info('Stop update and print fps')
         

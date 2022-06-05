@@ -10,7 +10,6 @@ class Jetson():
         super(Jetson, self).__init__()
 
         GPIO.setwarnings(False)
-        threading.Thread(target=self.change_timer).start()
         
         self.btn_lighting = QPushButton()
 
