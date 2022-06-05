@@ -73,8 +73,6 @@ class MainWindow(QMainWindow):
         self.btn_camera.clicked.connect(self.open_close_camera)
         self.btn_camera.setFixedHeight(60)
 
-        self.jetson.state = False
-
         self.btn_capture.setEnabled(False)
         self.btn_capture.setFixedHeight(60)
         self.btn_capture.clicked.connect(self.camera.image_capture)
@@ -230,8 +228,10 @@ class MainWindow(QMainWindow):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
     
+    # Changing battery pixmap every depending on Jetson GPIO states
     def battery_indicator(self):
         while True:
+            sleep(10 - time() % 10)
             if self.jetson.bat_status() == 'empty':
                 self.img_src = 'img/bat-empty.png'
                 pass
