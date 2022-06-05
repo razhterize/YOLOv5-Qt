@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
         available = QDesktopWidget().availableGeometry(self)
         title_height = self.style().pixelMetric(QStyle.PM_TitleBarHeight)
         if screen.width() < 1024 or screen.height() < 768:
-            self.showMaximized()                              # Set Maximized Window for small resolution
+            self.showMaximized()                                                    # Set Maximized Window for small resolution
             self.setFixedSize(available.width(), available.height()-title_height)   # Set maximum Window size according to screen
         else:
             self.setMinimumSize(QSize(1024, 700))       # Minimum Width and Height
