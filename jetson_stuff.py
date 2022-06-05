@@ -1,7 +1,7 @@
 import threading
 # import Jetson.GPIO as GPIO
 from gb import thread_runner
-from time import sleep
+from time import time, sleep
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QPushButton
 
@@ -45,4 +45,9 @@ class Jetson():
     #     elif GPIO.input(13) is GPIO.LOW:
     #         x = 'full'
     #     return x
+    def bat_status(self, a):
+        x = ''
+        vals = ['empty', 'half', 'full']
+        x = vals[a]
+        return x
         
