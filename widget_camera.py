@@ -194,10 +194,11 @@ class WidgetCamera(QWidget):
         qp.drawRect(rect)
 
         sw, sh = self.width(), self.height()  # 图像窗口宽高
-    
+        print(sh)
+        print(sw)
 
-        # if not self.opened:
-        #     qp.drawPixmap(sw/2-100, sh/2-100, 200, 200, QPixmap('img/video.svg'))
+        if not self.opened:
+            QPainter.drawPixmap(self.height(), self.width(), 200, 200, QPixmap('img/video.svg'))
 
         # 画图
         if self.opened and self.image is not None:
