@@ -187,8 +187,8 @@ class WidgetCamera(QWidget):
     def draw(self, qp):
         qp.setWindow(0, 0, self.width(), self.height())  # 设置窗口
         qp.setRenderHint(QPainter.SmoothPixmapTransform)
-        # 画框架背景
-        qp.setBrush(QColor('#cecece'))  # 框架背景色
+        # Draw a framework background
+        qp.setBrush(QColor('#cecece'))  # Frame background color background color
         qp.setPen(Qt.NoPen)
         rect = QRect(0, 0, self.width(), self.height())
         qp.drawRect(rect)

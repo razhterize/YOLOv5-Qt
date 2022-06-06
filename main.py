@@ -230,15 +230,20 @@ class MainWindow(QMainWindow):
     
     # Changing battery pixmap every depending on Jetson GPIO states
     def battery_indicator(self):
+        num = 0
         while True:
-            if self.jetson.bat_status(0) == 'empty':
+            a = self.jetson.bat_status(num)
+            if a == 'empty':
                 self.img_src = 'img/bat-empty.png'
-            elif self.jetson.bat_status(1) == 'half':
+            elif a == 'half':
                 self.img_src = 'img/bat-half.png'
-            elif self.jetson.bat_status(2) == 'full':
+            elif a == 'full':
                 self.img_src = 'img/bat-full.png'
             self.bat_label.setPixmap(QPixmap(self.img_src).scaled(40,20))
             sleep(2)
+            num += 1
+            if num == 3:
+                num = 0
 
 def main():
     app = QApplication(sys.argv)
