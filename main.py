@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
-
+        
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
         self.bat_label.setPixmap(QPixmap(self.img_src).scaledToHeight(20))
