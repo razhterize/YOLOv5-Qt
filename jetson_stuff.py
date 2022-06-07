@@ -21,7 +21,7 @@ class Jetson():
         self.btn_lighting.setFixedHeight(30)
         self.btn_lighting.setText('Light On')
         self.btn_lighting.clicked.connect(self.lighting)
-        self.btn_lighting.iconSize(20,7)
+        self.btn_lighting.setIconSize(20,7)
         self.btn_lighting.setIcon(QIcon('img/light-off.png'))        
 
     def lighting(self):
