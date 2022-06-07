@@ -198,6 +198,7 @@ class MainWindow(QMainWindow):
         min_height = f'min-height: {size}px;'       # Minimum Height
         max_width = f'max-width: {size}px;'         # Maximum Width
         max_height = f'max-height: {size}px;'       # maximum Height
+        
         # Set border shape and size
         border_radius = f'border-radius: {size/2}px;'   # Border is rounded
         border = 'border:1px solid black;'               # Black 1px thick border
@@ -230,17 +231,14 @@ class MainWindow(QMainWindow):
     # Changing battery pixmap every depending on Jetson GPIO states
     def battery_indicator(self):
         while True:
-            sleep(10 - time() % 10)
+            sleep(5 - time() % 5)
             if self.jetson.bat_status() == 'empty':
                 self.img_src = 'img/bat-empty.png'
-                pass
             elif self.jetson.bat_status() == 'half':
                 self.img_src = 'img/bat-half.png'
-                pass
             elif self.jetson.bat_status() == 'full':
                 self.img_src = 'img/bat-full.png'
-                pass
-            self.bat_label.setPixmap(self.img_src)
+            self.bat_label.setPixmap(QPixmap(self.img_src).scaled(40,20))
 
 def main():
     app = QApplication(sys.argv)

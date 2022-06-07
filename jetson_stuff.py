@@ -34,7 +34,7 @@ class Jetson():
             self.btn_lighting.setText('Light On')
             GPIO.output(7, GPIO.LOW)
 
-    def bat_status():
+    def bat_status(self):
         x = ''
         if GPIO.input(11) is GPIO.LOW and GPIO.input(13) is GPIO.HIGH:
             x = 'half'
