@@ -2,7 +2,7 @@ import threading
 # import Jetson.GPIO as GPIO
 from gb import thread_runner
 from time import time, sleep
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QPushButton
 
 class Jetson():
@@ -22,8 +22,7 @@ class Jetson():
         self.btn_lighting.setFixedHeight(30)
         self.btn_lighting.setText('Light On')
         self.btn_lighting.clicked.connect(self.lighting)
-
-        
+        self.btn_lighting.setIcon(QIcon('img/light-off.png'))        
 
     def lighting(self):
         self.change_timer()
