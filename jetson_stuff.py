@@ -11,28 +11,19 @@ class Jetson():
 
         # GPIO.setwarnings(False)
         # threading.Thread(target=self.change_timer).start()
-        
-        self.btn_lighting = QPushButton()
 
         # GPIO.setmode(GPIO.BOARD)
         # GPIO.setup(7, GPIO.OUT)
         # GPIO.setup(11, GPIO.IN)
         # GPIO.setup(13, GPIO.IN)
-
-        self.btn_lighting.setFixedHeight(30)
-        self.btn_lighting.setText('Light On')
-        self.btn_lighting.clicked.connect(self.lighting)
-        self.btn_lighting.setIcon(QIcon('img/light-off.png'))        
+        self.state = False
 
     def lighting(self):
-        self.change_timer()
-        # if self.state is False:
-        #     self.state = True
-        #     self.btn_lighting.setText('Light Off')
+        if self.state is False:
+            self.state = True
         #     GPIO.output(7, GPIO.HIGH)
-        # elif self.state is True:
-        #     self.state = False
-        #     self.btn_lighting.setText('Light On')
+        elif self.state is True:
+            self.state = False
         #     GPIO.output(7, GPIO.LOW)
 
     # def bat_status():

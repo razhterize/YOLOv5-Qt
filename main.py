@@ -49,6 +49,8 @@ class MainWindow(QMainWindow):
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
+        self.btn_lighting = QPushButton()
+        self.lighting_info = QLabel()
 
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
@@ -58,6 +60,13 @@ class MainWindow(QMainWindow):
         self.bat_label.setFixedWidth(40)
         self.bat_label.setAlignment(Qt.AlignRight)
 
+        self.lighting_info.setPixmap(QPixmap('img/light-off.png').scaled(60,27))
+        self.lighting_info.setFixedWidth(60)
+
+        self.btn_lighting.setFixedHeight(30)
+        self.btn_lighting.setText('Light On')
+        self.btn_lighting.clicked.connect(self.light)    
+
         self.load_model_thread = threading.Thread(target=self.load_yolo)
         self.load_model_thread.start()
 
@@ -65,9 +74,9 @@ class MainWindow(QMainWindow):
         self.settings.accepted.connect(self.reload)
 
         self.update_status('Loading Model....', False)
-        hboxMain = QHBoxLayout()
-        hboxMain.addWidget(self.status_icon)
-        hboxMain.addWidget(self.status_text)
+        hboxInfo = QHBoxLayout()
+        hboxInfo.addWidget(self.status_icon)
+        hboxInfo.addWidget(self.status_text)
 
         self.btn_camera.setEnabled(False)
         self.btn_camera.clicked.connect(self.open_close_camera)
@@ -77,8 +86,11 @@ class MainWindow(QMainWindow):
         self.btn_capture.setFixedHeight(60)
         self.btn_capture.clicked.connect(self.camera.image_capture)
 
-        hbox = QHBoxLayout()
+        hbox_lighting = QHBoxLayout()
+        hbox_lighting.addWidget(self.lighting_info)
+        hbox_lighting.addWidget(self.btn_lighting)
 
+        hbox = QHBoxLayout()
         self.label_fps = QLabel('FPS: ')
         hbox.addWidget(self.label_fps)
         hbox.addWidget(self.bat_label)
@@ -96,8 +108,8 @@ class MainWindow(QMainWindow):
         vbox1.addWidget(box)
         vbox1.addWidget(self.config)
         vbox1.addStretch()
-        vbox1.addLayout(hboxMain)
-        vbox1.addWidget(self.jetson.btn_lighting)
+        vbox1.addLayout(hboxInfo)
+        vbox1.addLayout(hbox_lighting)
         vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
 
@@ -228,6 +240,17 @@ class MainWindow(QMainWindow):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
     
+    def light(self):
+        # img = ''
+        self.jetson.lighting()
+        if self.jetson.state is False:
+            img = 'img/light-off.png'
+            self.btn_lighting.setText('Light On')
+        elif self.jetson.state is True:
+            img = 'img/light-on.png'
+            self.btn_lighting.setText('Light Off')
+        self.lighting_info.setPixmap(QPixmap(img).scaled(60,27))
+
     # Changing battery pixmap every depending on Jetson GPIO states
     def battery_indicator(self):
         num = 0
