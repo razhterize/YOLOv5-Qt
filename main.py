@@ -49,6 +49,7 @@ class MainWindow(QMainWindow):
         self.status_text = QLabel()
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
+        self.lighting_info = QLabel()
         
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
@@ -58,6 +59,8 @@ class MainWindow(QMainWindow):
         self.bat_label.setFixedWidth(40)
         self.bat_label.setAlignment(Qt.AlignRight)
 
+        self.lighting_info.setPixmap(QPixmap('img/light-on.png'))
+
         self.load_model_thread = threading.Thread(target=self.load_yolo)
         self.load_model_thread.start()
 
@@ -65,9 +68,9 @@ class MainWindow(QMainWindow):
         self.settings.accepted.connect(self.reload)
 
         self.update_status('Loading Model....', False)
-        hboxMain = QHBoxLayout()
-        hboxMain.addWidget(self.status_icon)
-        hboxMain.addWidget(self.status_text)
+        hboxInfo = QHBoxLayout()
+        hboxInfo.addWidget(self.status_icon)
+        hboxInfo.addWidget(self.status_text)
 
         self.btn_camera.setEnabled(False)
         self.btn_camera.clicked.connect(self.open_close_camera)
@@ -91,13 +94,18 @@ class MainWindow(QMainWindow):
         _vbox.addWidget(box)
         self.setLayout(_vbox)
 
+        hbox_lighting = QHBoxLayout()
+        hbox_lighting.addWidget(self.lighting_info)
+        hbox_lighting.addWidget(self.jetson.btn_lighting)
+
         vbox1 = QVBoxLayout()
         vbox1.setContentsMargins(0,0,0,0)
         vbox1.addWidget(box)
         vbox1.addWidget(self.config)
         vbox1.addStretch()
-        vbox1.addLayout(hboxMain)
-        vbox1.addWidget(self.jetson.btn_lighting)
+        vbox1.addLayout(hboxInfo)
+        vbox1.addLayout(hbox_lighting)
+        # vbox1.addWidget(self.jetson.btn_lighting)
         vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
 
