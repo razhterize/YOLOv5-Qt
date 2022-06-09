@@ -89,7 +89,7 @@ class WidgetCamera(QWidget):
             # 删去最后一层
             if img.shape[2] == 4:
                 img = img[:, :, :-1]
-            self.image = img
+            self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     @thread_runner
     def run_video_recorder(self, fps=30):
