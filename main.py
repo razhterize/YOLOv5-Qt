@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
         self.lighting_info = QLabel()
+        self.btn_lighting = QPushButton()
         
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
@@ -59,7 +60,12 @@ class MainWindow(QMainWindow):
         self.bat_label.setFixedWidth(40)
         self.bat_label.setAlignment(Qt.AlignRight)
 
-        self.lighting_info.setPixmap(QPixmap('img/light-on.png'))
+        self.lighting_info.setPixmap(QPixmap('img/light-on.png').scaled(60,27))
+        self.lighting_info.setFixedWidth(60)
+
+        self.btn_lighting.setFixedHeight(30)
+        self.btn_lighting.setText('Light On')
+        self.btn_lighting.clicked.connect(self.light)
 
         self.load_model_thread = threading.Thread(target=self.load_yolo)
         self.load_model_thread.start()
@@ -96,7 +102,7 @@ class MainWindow(QMainWindow):
 
         hbox_lighting = QHBoxLayout()
         hbox_lighting.addWidget(self.lighting_info)
-        hbox_lighting.addWidget(self.jetson.btn_lighting)
+        hbox_lighting.addWidget(self.btn_lighting)
 
         vbox1 = QVBoxLayout()
         vbox1.setContentsMargins(0,0,0,0)
@@ -105,7 +111,6 @@ class MainWindow(QMainWindow):
         vbox1.addStretch()
         vbox1.addLayout(hboxInfo)
         vbox1.addLayout(hbox_lighting)
-        # vbox1.addWidget(self.jetson.btn_lighting)
         vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
 
@@ -235,6 +240,16 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
+
+    def light(self):
+        self.jetson.lighting()
+        if self.jetson.state is False:
+            img = 'img/light-off.png'
+            self.btn_lighting.setText('Light On')
+        elif self.jetson.state is True:
+            img = 'img/light-on.png'
+            self.btn_lighting.setText('Light Off')
+        self.lighting_info.setPixmap(QPixmap(img).scaled(60,27))
     
     # Changing battery pixmap every depending on Jetson GPIO states
     def battery_indicator(self):
