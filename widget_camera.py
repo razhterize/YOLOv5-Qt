@@ -8,6 +8,7 @@ Desc: 摄像头界面
 """
 import os
 from pathlib import Path
+import numpy as np
 import time
 
 import cv2
@@ -29,11 +30,13 @@ class WidgetCamera(QWidget):
         current_date = time.strftime('%d-%m-%Y_%H-%M', time.localtime())
         self.path = f'output/{current_date}'
 
+        self.sh, self.sw = self.height(), self.width()
+
         self.opened = False  # 摄像头已打开
         self.detecting = False  # 目标检测中
         self.cap = cv2.VideoCapture()
 
-        self.fourcc = cv2.VideoWriter_fourcc('X', 'V', 'I', 'D')  # XVID MPEG-4
+        self.fourcc = cv2.VideoWriter_fourcc('M','P','4','V')  # XVID MPEG-4
         self.writer = cv2.VideoWriter()  # Record Vide, turn on camera then record
 
         self.pix_image = None   # QPixmap video frame
@@ -109,18 +112,21 @@ class WidgetCamera(QWidget):
                 break
 
         # If screen exist, start recording
-        if self.image is not None:
+        if self.image is not None: 
             # open video writer
-            h, w, _ = self.image.shape
             self.writer.open(
-                filename=f'{self.path}/{now}_record.avi',
+                filename=f'{self.path}/{now}_record.mp4v',
                 fourcc=self.fourcc,
                 fps=fps,
-                frameSize=(w, h))  # save video
+                frameSize=(self.sw, self.sh))  # save video
 
             wait = 1 / fps - 0.004  # wait for writer to finish
             while self.opened:
-                self.writer.write(self.image)  # write each frame takes 1-2ms
+                pixmap_src = QPixmap(self.grab(QRect(0,0,self.sw, self.sh)))
+                rec_src = pixmap_src.toImage()
+                s = rec_src.bits().asstring(self.sw * self.sh * 4)
+                arr = np.fromstring(s, dtype=np.uint8).reshape((self.sh, self.sw, 4))
+                self.writer.write(arr)  # write each frame takes 1-2ms
                 time.sleep(wait)
         YOLOGGER.info('video recording thread ends')
 
@@ -138,7 +144,8 @@ class WidgetCamera(QWidget):
 
     def image_capture(self):
         img_name = f"{self.path}/capture_{self.x}.png"
-        cv2.imwrite(img_name, self.image)
+        img = QPixmap(self.grab(QRect(0,0, self.sw, self.sh)))
+        QPixmap.save(img, img_name, "JPEG", 100)
         YOLOGGER.info("Image captured")
         self.x += 1
 

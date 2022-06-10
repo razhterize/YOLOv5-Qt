@@ -241,7 +241,6 @@ class MainWindow(QMainWindow):
             self.camera.close_camera()
     
     def light(self):
-        # img = ''
         self.jetson.lighting()
         if self.jetson.state is False:
             img = 'img/light-off.png'
