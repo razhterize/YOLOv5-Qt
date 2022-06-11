@@ -1,11 +1,12 @@
 import sys
 import threading
 import platform
+import pyautogui
 from time import time, sleep
 
 import pkg_resources as pkg
 
-from PyQt5.QtCore import QSize, pyqtSignal, Qt
+from PyQt5.QtCore import QSize, pyqtSignal, Qt, QRect
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel, QGroupBox
 
@@ -232,7 +233,7 @@ class MainWindow(QMainWindow):
             sleep(0.2)
         self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
         YOLOGGER.info('Stop update and print fps')
-        
+    
     def resizeEvent(self, event):
         self.update()
 

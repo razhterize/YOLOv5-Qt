@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import numpy as np
 import time
+import pyautogui
 
 import cv2
 
@@ -30,13 +31,15 @@ class WidgetCamera(QWidget):
         current_date = time.strftime('%d-%m-%Y_%H-%M', time.localtime())
         self.path = f'output/{current_date}'
 
-        self.sh, self.sw = self.height(), self.width()
+        self.screenshot = None
+        self.sx, self.sy, self.sh, self.sw =self.x(), self.y(), self.height(), self.width()
 
         self.opened = False  # 摄像头已打开
         self.detecting = False  # 目标检测中
+        self.record = False
         self.cap = cv2.VideoCapture()
 
-        self.fourcc = cv2.VideoWriter_fourcc('M','P','4','V')  # XVID MPEG-4
+        self.fourcc = cv2.VideoWriter_fourcc('X', 'V', 'I', 'D')  # XVID MPEG-4
         self.writer = cv2.VideoWriter()  # Record Vide, turn on camera then record
 
         self.pix_image = None   # QPixmap video frame
@@ -92,14 +95,17 @@ class WidgetCamera(QWidget):
             # 删去最后一层
             if img.shape[2] == 4:
                 img = img[:, :, :-1]
-            self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            self.image = img
 
     @thread_runner
-    def run_video_recorder(self, fps=30):
+    def run_video_recorder(self, fps=10):
         """Run video writer"""
         YOLOGGER.info('Video writer run')
         now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
         # make sure output folder exist, if not create one
+        if not os.path.exists('output'):
+            os.mkmdir('output')
         if not os.path.exists(self.path):
             os.mkdir(self.path)
         # wait for a screen
@@ -115,19 +121,17 @@ class WidgetCamera(QWidget):
         if self.image is not None: 
             # open video writer
             self.writer.open(
-                filename=f'{self.path}/{now}_record.mp4v',
+                filename=f'{self.path}/{now}_record.avi',
                 fourcc=self.fourcc,
                 fps=fps,
                 frameSize=(self.sw, self.sh))  # save video
 
             wait = 1 / fps - 0.004  # wait for writer to finish
             while self.opened:
-                pixmap_src = QPixmap(self.grab(QRect(0,0,self.sw, self.sh)))
-                rec_src = pixmap_src.toImage()
-                s = rec_src.bits().asstring(self.sw * self.sh * 4)
-                arr = np.fromstring(s, dtype=np.uint8).reshape((self.sh, self.sw, 4))
-                self.writer.write(arr)  # write each frame takes 1-2ms
+                self.writer.write(self.image)
+                # cv2.imshow('Recording', frame)
                 time.sleep(wait)
+        self.record = False
         YOLOGGER.info('video recording thread ends')
 
     def stop_video_recorder(self):
@@ -192,7 +196,7 @@ class WidgetCamera(QWidget):
         qp.setWindow(0, 0, self.width(), self.height())  # 设置窗口
         qp.setRenderHint(QPainter.SmoothPixmapTransform)
         # Draw a framework background
-        qp.setBrush(QColor('#cecece'))  # Frame background color background color
+        # qp.setBrush(QColor('#cecece'))  # Frame background color background color
         qp.setPen(Qt.NoPen)
         rect = QRect(0, 0, self.width(), self.height())
         qp.drawRect(rect)
@@ -200,8 +204,8 @@ class WidgetCamera(QWidget):
         sw, sh = self.width(), self.height()  # 图像窗口宽高
     
 
-        # if not self.opened:
-        #     qp.drawPixmap((sw-1)/2-100, sh/2-100, 200, 200, QPixmap('img/video.svg'))
+        if not self.opened:
+            qp.drawPixmap((sw-1)/2-100, sh/2-100, 200, 200, QPixmap('img/video.svg'))
 
         # 画图
         if self.opened and self.image is not None:
@@ -209,7 +213,7 @@ class WidgetCamera(QWidget):
             self.scale = sw / iw if sw / iw < sh / ih else sh / ih  # 缩放比例
             px = round((sw - iw * self.scale) / 2)
             py = round((sh - ih * self.scale) / 2)
-            qimage = QImage(self.image.data, iw, ih, 3 * iw, QImage.Format_RGB888)  # 转QImage
+            qimage = QImage(self.image.data, iw, ih, 3 * iw, QImage.Format_BGR888)  # 转QImage
             qpixmap = QPixmap.fromImage(qimage.scaled(sw, sh, Qt.KeepAspectRatio))  # 转QPixmap
             pw, ph = qpixmap.width(), qpixmap.height()  # 缩放后的QPixmap大小
             qp.drawPixmap(px, py, qpixmap)
