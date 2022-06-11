@@ -1,7 +1,6 @@
 import sys
 import threading
 import platform
-import pyautogui
 from time import time, sleep
 
 import pkg_resources as pkg
@@ -139,6 +138,11 @@ class MainWindow(QMainWindow):
         else:
             self.setMinimumSize(QSize(1024, 700))       # Minimum Width and Height
         threading.Thread(target=self.battery_indicator).start()
+
+        # ------ Get QWidget that shows image location and dimension ------#
+        self.dimension = self.camera.geometry().getCoords()
+        print(self.dimension)
+
         self.show()
 
     def open_close_camera(self):

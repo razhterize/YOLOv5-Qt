@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import numpy as np
 import time
+import pyautogui
 
 import cv2
 
@@ -31,6 +32,7 @@ class WidgetCamera(QWidget):
         self.path = f'output/{current_date}'
 
         self.sh, self.sw = self.height(), self.width()
+        self.x_pos, self.y_pos = None, None
 
         self.allowDraw = True
 
@@ -39,7 +41,9 @@ class WidgetCamera(QWidget):
         self.record = False
         self.cap = cv2.VideoCapture()
 
-        self.fourcc = cv2.VideoWriter_fourcc(*"MP4V")  # XVID MPEG-4
+        self.rec_src = None
+
+        self.fourcc = cv2.VideoWriter_fourcc(*"XVID")  # XVID MPEG-4
         self.writer = cv2.VideoWriter()  # Record Vide, turn on camera then record
 
         self.pix_image = None   # QPixmap video frame
@@ -105,7 +109,7 @@ class WidgetCamera(QWidget):
         now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
         # make sure output folder exist, if not create one
         if not os.path.exists('output'):
-            os.mkmdir('output')
+            os.mkdir('output')
         if not os.path.exists(self.path):
             os.mkdir(self.path)
         # wait for a screen
@@ -121,27 +125,28 @@ class WidgetCamera(QWidget):
         if self.image is not None: 
             # open video writer
             self.writer.open(
-                filename=f'{self.path}/{now}_record.mp4v',
+                filename=f'{self.path}/{now}_record.avi',
                 fourcc=self.fourcc,
                 fps=fps,
                 frameSize=(self.sw, self.sh))  # save video
-
             wait = 1 / fps - 0.004  # wait for writer to finish
             while self.opened:
-                # Record video input
-                # As of now, only record video input without bounding box
                 self.grab_widget()
                 self.writer.write(self.rec_src)
                 time.sleep(wait)
+                self.showImage()
         YOLOGGER.info('video recording thread ends')
 
     def grab_widget(self):
-        self.allowDraw = False
-        src = QPixmap(self.grab(QRect(0,0, self.sw, self.sh))).toImage()
-        self.allowDraw = True
-        s = src.bits().asstring(self.sw * self.sh * 4)
-        self.rec_src = np.fromstring(s, dtype=np.uint8).reshape((self.sh, self.sw, 4))
+        dimensions = self.geometry().getCoords()
+        raw_img = pyautogui.screenshot(region=dimensions)
+        frame = np.array(raw_img)
+        self.rec_src = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+    def showImage(self):
+        cv2.namedWindow('Image', cv2.WINDOW_NORMAL)
+        cv2.imshow(self.rec_src)
+        
     def stop_video_recorder(self):
         """停止视频录制线程"""
         if self.writer.isOpened():
@@ -194,12 +199,10 @@ class WidgetCamera(QWidget):
         self.update()
 
     def paintEvent(self, event):
-        if self.allowDraw is True:
-            qp = QPainter()
-            qp.begin(self)
-            self.draw(qp)
-            qp.end()
-        
+        qp = QPainter()
+        qp.begin(self)
+        self.draw(qp)
+        qp.end()
 
     def draw(self, qp):
         qp.setWindow(0, 0, self.width(), self.height())  # 设置窗口
