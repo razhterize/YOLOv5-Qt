@@ -31,8 +31,7 @@ class WidgetCamera(QWidget):
         current_date = time.strftime('%d-%m-%Y_%H-%M', time.localtime())
         self.path = f'output/{current_date}'
 
-        self.screenshot = None
-        self.sx, self.sy, self.sh, self.sw =self.x(), self.y(), self.height(), self.width()
+        self.sh, self.sw = self.height(), self.width()
 
         self.opened = False  # 摄像头已打开
         self.detecting = False  # 目标检测中
@@ -128,8 +127,10 @@ class WidgetCamera(QWidget):
 
             wait = 1 / fps - 0.004  # wait for writer to finish
             while self.opened:
-                self.writer.write(self.image)
-                # cv2.imshow('Recording', frame)
+                rec_src = QPixmap(self.grab(QRect(0,0,self.sw, self.sh))).toImage()
+                s = rec_src.bits().asstring(self.sw * self.sh * 4)
+                arr = np.fromstring(s, dtype=np.uint8).reshape((self.sh, self.sw, 4)) 
+                self.writer.write(arr)
                 time.sleep(wait)
         self.record = False
         YOLOGGER.info('video recording thread ends')
