@@ -5,7 +5,7 @@ from time import time, sleep
 
 import pkg_resources as pkg
 
-from PyQt5.QtCore import QSize, pyqtSignal, Qt, QRect
+from PyQt5.QtCore import QSize, pyqtSignal, Qt, QPoint
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel, QGroupBox
 
@@ -50,7 +50,6 @@ class MainWindow(QMainWindow):
         self.btn_camera = QPushButton('Start/Stop Camera')
         self.btn_capture = QPushButton('Capture Image')
         self.btn_lighting = QPushButton()
-        self.lighting_info = QLabel()
 
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
@@ -60,11 +59,9 @@ class MainWindow(QMainWindow):
         self.bat_label.setFixedWidth(40)
         self.bat_label.setAlignment(Qt.AlignRight)
 
-        self.lighting_info.setPixmap(QPixmap('img/light-off.png').scaled(60,27))
-        self.lighting_info.setFixedWidth(60)
-
-        self.btn_lighting.setFixedHeight(30)
-        self.btn_lighting.setText('Light On')
+        self.btn_lighting.setFixedHeight(60)
+        self.btn_lighting.setIconSize(QSize(100,50))
+        self.btn_lighting.setIcon(QIcon('img/light-off.png'))
         self.btn_lighting.clicked.connect(self.light)    
 
         self.load_model_thread = threading.Thread(target=self.load_yolo)
@@ -87,8 +84,8 @@ class MainWindow(QMainWindow):
         self.btn_capture.clicked.connect(self.camera.image_capture)
 
         hbox_lighting = QHBoxLayout()
-        hbox_lighting.addWidget(self.lighting_info)
         hbox_lighting.addWidget(self.btn_lighting)
+        hbox_lighting.addWidget(self.btn_capture)
 
         hbox = QHBoxLayout()
         self.label_fps = QLabel('FPS: ')
@@ -110,7 +107,6 @@ class MainWindow(QMainWindow):
         vbox1.addStretch()
         vbox1.addLayout(hboxInfo)
         vbox1.addLayout(hbox_lighting)
-        vbox1.addWidget(self.btn_capture)
         vbox1.addWidget(self.btn_camera)
 
         right_widget = QWidget()
@@ -245,15 +241,16 @@ class MainWindow(QMainWindow):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
     
+    def moveEvent(self, event):
+        self.camera.moved = True
+        self.camera.grab_widget_coordinate()
+    
     def light(self):
         self.jetson.lighting()
         if self.jetson.state is False:
-            img = 'img/light-off.png'
-            self.btn_lighting.setText('Light On')
+            self.btn_lighting.setIcon(QIcon('img/light-off.png'))
         elif self.jetson.state is True:
-            img = 'img/light-on.png'
-            self.btn_lighting.setText('Light Off')
-        self.lighting_info.setPixmap(QPixmap(img).scaled(60,27))
+            self.btn_lighting.setIcon(QIcon('img/light-on.png'))
 
     # Changing battery pixmap every depending on Jetson GPIO states
     def battery_indicator(self):

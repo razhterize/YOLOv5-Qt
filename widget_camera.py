@@ -14,8 +14,8 @@ import pyautogui
 
 import cv2
 
-from PyQt5.QtCore import QRect, Qt, QTimer
-from PyQt5.QtGui import QPainter, QColor, QPixmap, QImage, QFont, QBrush, QPen, QStaticText
+from PyQt5.QtCore import QRect, Qt, QTimer, QPoint
+from PyQt5.QtGui import QPainter, QColor, QPixmap, QImage, QFont, QBrush, QPen
 from PyQt5.QtWidgets import QWidget
 
 import msg_box
@@ -32,16 +32,14 @@ class WidgetCamera(QWidget):
         self.path = f'output/{current_date}'
 
         self.sh, self.sw = self.height(), self.width()
-        self.x_pos, self.y_pos = None, None
-
-        self.allowDraw = True
-
         self.opened = False  # 摄像头已打开
         self.detecting = False  # 目标检测中
         self.record = False
         self.cap = cv2.VideoCapture()
 
         self.rec_src = None
+        self._x, self._y, self._h, self._w = None, None, None, None
+        self.moved = False
 
         self.fourcc = cv2.VideoWriter_fourcc(*"XVID")  # XVID MPEG-4
         self.writer = cv2.VideoWriter()  # Record Vide, turn on camera then record
@@ -134,18 +132,22 @@ class WidgetCamera(QWidget):
                 self.grab_widget()
                 self.writer.write(self.rec_src)
                 time.sleep(wait)
-                self.showImage()
         YOLOGGER.info('video recording thread ends')
 
     def grab_widget(self):
-        dimensions = self.geometry().getCoords()
-        raw_img = pyautogui.screenshot(region=dimensions)
+        if self.moved is True:
+            self.grab_widget_coordinate()
+            self.moved = False
+        raw_img = pyautogui.screenshot(region=(self._x, self._y, self._w, self._h))
         frame = np.array(raw_img)
         self.rec_src = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    def showImage(self):
-        cv2.namedWindow('Image', cv2.WINDOW_NORMAL)
-        cv2.imshow(self.rec_src)
+    def grab_widget_coordinate(self):
+        geometry = self.geometry().getCoords()
+        self._h, self._w = geometry[2], geometry[3]
+        globalGeometry = self.mapToGlobal(QPoint(0,0))
+        self._x = globalGeometry.x()
+        self._y = globalGeometry.y()
         
     def stop_video_recorder(self):
         """停止视频录制线程"""
