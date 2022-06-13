@@ -51,6 +51,7 @@ class MainWindow(QMainWindow):
         self.btn_capture = QPushButton('Capture Image')
         self.btn_lighting = QPushButton()
 
+        # Battery Indicator
         self.img_src = 'img/bat-full.png'
         self.bat_label = QLabel()
         self.bat_label.setPixmap(QPixmap(self.img_src).scaledToHeight(20))
@@ -59,6 +60,7 @@ class MainWindow(QMainWindow):
         self.bat_label.setFixedWidth(40)
         self.bat_label.setAlignment(Qt.AlignRight)
 
+        #Button to turn lighting on or off
         self.btn_lighting.setFixedHeight(60)
         self.btn_lighting.setIconSize(QSize(100,50))
         self.btn_lighting.setIcon(QIcon('img/light-off.png'))
@@ -253,7 +255,7 @@ class MainWindow(QMainWindow):
             self.btn_lighting.setIcon(QIcon('img/light-on.png'))
 
     # Changing battery pixmap every depending on Jetson GPIO states
-    def battery_indicator(self):
+    def batteryindicator(self):
         num = 0
         while True:
             a = self.jetson.bat_status(num)
