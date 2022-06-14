@@ -10,18 +10,17 @@ import os
 from pathlib import Path
 import numpy as np
 import time
-import pyautogui
-
+import threading
 import cv2
 
-from PyQt5.QtCore import QRect, Qt, QTimer, QPoint
+from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QPainter, QColor, QPixmap, QImage, QFont, QBrush, QPen
 from PyQt5.QtWidgets import QWidget
-
 import msg_box
 from gb import thread_runner, YOLOGGER
 from yolo import YOLO5
 
+# os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = QLibraryInfo.location(QLibraryInfo.PluginsPath)
 
 class WidgetCamera(QWidget):
     def __init__(self):
@@ -34,12 +33,7 @@ class WidgetCamera(QWidget):
         self.sh, self.sw = self.height(), self.width()
         self.opened = False  # 摄像头已打开
         self.detecting = False  # 目标检测中
-        self.record = False
         self.cap = cv2.VideoCapture()
-
-        self.rec_src = None
-        self._x, self._y, self._h, self._w = None, None, None, None
-        self.moved = False
 
         self.fourcc = cv2.VideoWriter_fourcc(*"XVID")  # XVID MPEG-4
         self.writer = cv2.VideoWriter()  # Record Vide, turn on camera then record
@@ -48,6 +42,8 @@ class WidgetCamera(QWidget):
         self.image = None       # Current image
         self.scale = 1          # Scaling
         self.objects = []
+        self.rec_src = None     # Video Recorder source
+        self.ox, self.oy, self.ow, self.oh = 0,0,0,0
 
         self.fps = 0            # Frame rate
 
@@ -94,14 +90,25 @@ class WidgetCamera(QWidget):
     def read_image(self):
         ret, img = self.cap.read()
         if ret:
-            # 删去最后一层
             if img.shape[2] == 4:
                 img = img[:, :, :-1]
             # self.image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             self.image = img
 
+    def cv_bounding_box(self):
+        img = self.image
+        for obj in self.objects:
+            rgb = [round(c) for c in obj['color']]
+            color = (rgb[0], rgb[1], rgb[2])
+            point = (self.ox, self.oy)
+            size = (self.ow, self.oh)
+            img = cv2.rectangle(img, point, size, color, 2)
+            img = cv2.putText(img, str(obj['class']) + str(round(obj['confidence'], 2)), (self.ox, self.oy-5), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 1, cv2.LINE_AA)
+        self.rec_src = img
+
     @thread_runner
-    def run_video_recorder(self, fps=10):
+    def run_video_recorder(self, fps=30):
+        self.record = True
         """Run video writer"""
         YOLOGGER.info('Video writer run')
         now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
@@ -129,26 +136,12 @@ class WidgetCamera(QWidget):
                 frameSize=(self.sw, self.sh))  # save video
             wait = 1 / fps - 0.004  # wait for writer to finish
             while self.opened:
-                self.grab_widget()
                 self.writer.write(self.rec_src)
-                time.sleep(wait)
+                cv2.waitKey(1)
+                self.cv_bounding_box()
+        self.record = False
         YOLOGGER.info('video recording thread ends')
 
-    def grab_widget(self):
-        if self.moved is True:
-            self.grab_widget_coordinate()
-            self.moved = False
-        raw_img = pyautogui.screenshot(region=(self._x, self._y, self._w, self._h))
-        frame = np.array(raw_img)
-        self.rec_src = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-    def grab_widget_coordinate(self):
-        geometry = self.geometry().getCoords()
-        self._h, self._w = geometry[2], geometry[3]
-        globalGeometry = self.mapToGlobal(QPoint(0,0))
-        self._x = globalGeometry.x()
-        self._y = globalGeometry.y()
-        
     def stop_video_recorder(self):
         """停止视频录制线程"""
         if self.writer.isOpened():
@@ -157,7 +150,6 @@ class WidgetCamera(QWidget):
             msg = msg_box.MsgSuccess()
             msg.setText(f'录制的视频已保存到以下路径:\n{path}')
             msg.setInformativeText('本窗口将在5s内自动关闭!')
-            QTimer().singleShot(5000, msg.accept)
             msg.exec()
 
     def image_capture(self):
@@ -206,17 +198,14 @@ class WidgetCamera(QWidget):
         self.draw(qp)
         qp.end()
 
+
     def draw(self, qp):
         qp.setWindow(0, 0, self.width(), self.height())  # 设置窗口
         qp.setRenderHint(QPainter.SmoothPixmapTransform)
-        # Draw a framework background
-        # qp.setBrush(QColor('#cecece'))  # Frame background color background color
         qp.setPen(Qt.NoPen)
         rect = QRect(0, 0, self.width(), self.height())
         qp.drawRect(rect)
-
         sw, sh = self.width(), self.height()  # 图像窗口宽高
-    
 
         if not self.opened:
             qp.drawPixmap((sw-1)/2-100, sh/2-100, 200, 200, QPixmap('img/video.svg'))
@@ -231,11 +220,10 @@ class WidgetCamera(QWidget):
             qpixmap = QPixmap.fromImage(qimage.scaled(sw, sh, Qt.KeepAspectRatio))  # 转QPixmap
             pw, ph = qpixmap.width(), qpixmap.height()  # 缩放后的QPixmap大小
             qp.drawPixmap(px, py, qpixmap)
-
             # 画目标框
             font = QFont()
             font.setFamily('Microsoft YaHei')
-            font.setPointSize(10)
+            font.setPointSize(12)
             qp.setFont(font)
             brush1 = QBrush(Qt.NoBrush)  # 内部不填充
             qp.setBrush(brush1)
@@ -245,11 +233,9 @@ class WidgetCamera(QWidget):
                 rgb = [round(c) for c in obj['color']]
                 pen.setColor(QColor(rgb[0], rgb[1], rgb[2]))  # 边框颜色
                 qp.setPen(pen)
-                # 坐标 宽高
-                ox, oy = px + round(pw * obj['x']), py + round(ph * obj['y'])
-                ow, oh = round(pw * obj['w']), round(ph * obj['h'])
-                obj_rect = QRect(ox, oy, ow, oh)
+                self.ox, self.oy = px + round(pw * obj['x']), py + round(ph * obj['y'])
+                self.ow, self.oh = round(pw * obj['w']), round(ph * obj['h'])
+                obj_rect = QRect(self.ox, self.oy, self.ow, self.oh)
                 qp.drawRect(obj_rect)  # 画矩形框
-
                 # 画 类别 和 置信度
-                qp.drawText(ox, oy - 5, str(obj['class']) + str(round(obj['confidence'], 2)))
+                qp.drawText(self.ox, self.oy - 5, str(obj['class']) + str(round(obj['confidence'], 2)))

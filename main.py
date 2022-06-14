@@ -5,7 +5,7 @@ from time import time, sleep
 
 import pkg_resources as pkg
 
-from PyQt5.QtCore import QSize, pyqtSignal, Qt, QPoint
+from PyQt5.QtCore import QSize, pyqtSignal, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QApplication, QDesktopWidget, QStyle, QLabel, QGroupBox
 
@@ -138,9 +138,6 @@ class MainWindow(QMainWindow):
         threading.Thread(target=self.battery_indicator).start()
 
         # ------ Get QWidget that shows image location and dimension ------#
-        self.dimension = self.camera.geometry().getCoords()
-        print(self.dimension)
-
         self.show()
 
     def open_close_camera(self):
@@ -243,10 +240,6 @@ class MainWindow(QMainWindow):
         if self.camera.cap.isOpened():
             self.camera.close_camera()
     
-    def moveEvent(self, event):
-        self.camera.moved = True
-        self.camera.grab_widget_coordinate()
-    
     def light(self):
         self.jetson.lighting()
         if self.jetson.state is False:
@@ -255,7 +248,7 @@ class MainWindow(QMainWindow):
             self.btn_lighting.setIcon(QIcon('img/light-on.png'))
 
     # Changing battery pixmap every depending on Jetson GPIO states
-    def batteryindicator(self):
+    def battery_indicator(self):
         num = 0
         while True:
             a = self.jetson.bat_status(num)
