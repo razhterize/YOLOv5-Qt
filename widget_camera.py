@@ -102,7 +102,7 @@ class WidgetCamera(QWidget):
             color = (rgb[0], rgb[1], rgb[2])
             point = (self.ox, self.oy)
             size = (self.ow, self.oh)
-            img = cv2.rectangle(img, point, size, color, 2)
+            img = cv2.rectangle(img, point, size, color, 1)
             img = cv2.putText(img, str(obj['class']) + str(round(obj['confidence'], 2)), (self.ox, self.oy-5), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 1, cv2.LINE_AA)
         self.rec_src = img
 
