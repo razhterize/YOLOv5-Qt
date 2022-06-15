@@ -31,6 +31,7 @@ weights/*
 storage.googleapis.com
 runs/*
 data/*
+output/*
 !data/samples/zidane.jpg
 !data/samples/bus.jpg
 !data/coco.names
