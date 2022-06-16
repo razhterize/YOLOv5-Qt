@@ -34,8 +34,8 @@ class MainWindow(QMainWindow):
             msg.exec_()
             sys.exit()
 
-        self.setWindowTitle(f'{APP_NAME} {APP_VERSION}')
-        self.setWindowIcon(QIcon('img/yologo.png'))
+        self.setWindowTitle(f'YOLOv5 Interface {APP_VERSION}')
+        self.setWindowIcon(QIcon('img/logo.png'))
 
         gb.init_logger()
         gb.clean_log()

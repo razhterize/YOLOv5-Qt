@@ -10,7 +10,6 @@ import os
 from pathlib import Path
 import numpy as np
 import time
-import threading
 import cv2
 
 from PyQt5.QtCore import QRect, Qt
