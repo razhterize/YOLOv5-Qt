@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         hbox_lighting.addWidget(self.btn_capture)
 
         hbox = QHBoxLayout()
-        self.label_fps = QLabel('FPS: ')
+        self.label_fps = QLabel('Detection FPS: ')
         hbox.addWidget(self.label_fps)
         hbox.addWidget(self.bat_label)
 
@@ -226,11 +226,9 @@ class MainWindow(QMainWindow):
     @thread_runner
     def update_info(self):
         YOLOGGER.info('Start update and print fps')
-        fps = self.camera.fps
         while self.camera.detecting:
-            self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
+            self.label_fps.setText(f'Detection FPS: { "" if self.camera.fps <= 0 else round(self.camera.fps, 1)}')
             sleep(0.2)
-        self.label_fps.setText(f'FPS: { "" if fps <= 0 else round(fps, 1)}')
         YOLOGGER.info('Stop update and print fps')
     
     def resizeEvent(self, event):
