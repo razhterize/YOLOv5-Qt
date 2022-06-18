@@ -119,7 +119,7 @@ class WidgetCamera(QWidget):
                 YOLOGGER.warning('Frame was not acquired after timeout, video recording canceled')
                 break
 
-        # If screen exist, start recording
+        # If image exist, start recording
         if self.image is not None: 
             # open video writer
             self.writer.open(
