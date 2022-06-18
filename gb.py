@@ -13,16 +13,14 @@ YOLOGGER = logging.getLogger()
 
 
 def thread_runner(func):
-    """多线程"""
-
+    """Multithreading"""
     def wrapper(*args, **kwargs):
         threading.Thread(target=func, args=args, kwargs=kwargs).start()
-
     return wrapper
 
 
 def clean_log():
-    YOLOGGER.info('开始清理日志文件')
+    YOLOGGER.info('Start cleaning the log file')
     if os.path.exists('log'):
         file_list = os.listdir('log')
         today = datetime.date.today()
@@ -33,7 +31,7 @@ def clean_log():
             if abs(interval.days) > 30:
                 path = 'log/' + file
                 os.remove(path)
-                YOLOGGER.info(f'删除过期日志: {path}')
+                YOLOGGER.info(f'Delete the expiration log: {path}')
 
 
 def init_logger():
@@ -61,25 +59,25 @@ def init_config():
         with open('config/config.json', 'r') as file_settings:
             CONFIG = json.loads(file_settings.read())
     except FileNotFoundError as err_file:
-        YOLOGGER.error('配置文件不存在: ' + str(err_file))
+        YOLOGGER.error('Configuration file does not exist: ' + str(err_file))
 
 
 def record_config(_dict):
-    """将设置参数写入到本地文件保存，传入字典"""
+    """Write setting parameter to a local config file"""
     global CONFIG
     # 更新配置
     for k, v in _dict.items():
         CONFIG[k] = v
     if not os.path.exists('config'):
-        os.mkdir('config')  # 创建config文件夹
+        os.mkdir('config')  # Create a Config folder
     try:
-        # 写入文件
+        # Write file
         with open('config/config.json', 'w') as file_config:
             file_config.write(json.dumps(CONFIG, indent=4))
     except FileNotFoundError as err_file:
         YOLOGGER.error(err_file)
         msg = msg_box.MsgWarning()
-        msg.setText('参数保存失败！')
+        msg.setText('Parameter preservation failed！')
         msg.exec()
 
 

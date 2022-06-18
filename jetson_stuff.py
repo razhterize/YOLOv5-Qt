@@ -18,6 +18,7 @@ class Jetson():
         # GPIO.setup(13, GPIO.IN)
         self.state = False
 
+    # Function to turn on/off lighting (only for jetson)
     def lighting(self):
         if self.state is False:
             self.state = True
@@ -26,6 +27,7 @@ class Jetson():
             self.state = False
         #     GPIO.output(7, GPIO.LOW)
 
+    # Battery status (only for jetson)
     # def bat_status():
     #     x = ''
     #     if GPIO.input(11) is GPIO.LOW and GPIO.input(13) is GPIO.HIGH:
@@ -35,6 +37,7 @@ class Jetson():
     #     elif GPIO.input(13) is GPIO.LOW:
     #         x = 'full'
     #     return x
+    # Testing battery function
     def bat_status(self, a):
         x = ''
         vals = ['empty', 'half', 'full']

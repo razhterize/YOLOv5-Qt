@@ -26,7 +26,7 @@ class SettingsDialog(QDialog):
 
         grid = QGridLayout()
 
-        # 选择权重文件
+        # Select weights file
         label_weights = QLabel('Weights')
         self.line_weights = QLineEdit()
         self.line_weights.setFixedHeight(HEIGHT)
@@ -40,7 +40,7 @@ class SettingsDialog(QDialog):
         grid.addWidget(self.line_weights, 2, 1, 1, 2)
         grid.addWidget(self.btn_weights, 2, 3)
 
-        # 是否使用GPU
+        # GPU Acceleration
         label_device = QLabel('CUDA device')
         self.line_device = QLineEdit('cpu')
         self.line_device.setToolTip('cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -50,7 +50,7 @@ class SettingsDialog(QDialog):
         grid.addWidget(label_device, 3, 0)
         grid.addWidget(self.line_device, 3, 1, 1, 3)
 
-        # 设置图像大小
+        # Set image size
         label_size = QLabel('Img Size')
         self.combo_size = QComboBox()
         self.combo_size.setToolTip('inference size (pixels)')
@@ -68,7 +68,7 @@ class SettingsDialog(QDialog):
         grid.addWidget(label_size, 4, 0)
         grid.addWidget(self.combo_size, 4, 1, 1, 3)
 
-        # 设置置信度阈值
+        # Set the confidence threshold
         label_conf = QLabel('Confidence')
         self.spin_conf = QDoubleSpinBox()
         self.spin_conf.setToolTip('confidence threshold')
@@ -80,7 +80,7 @@ class SettingsDialog(QDialog):
         grid.addWidget(label_conf, 5, 0)
         grid.addWidget(self.spin_conf, 5, 1, 1, 3)
 
-        # 设置IOU阈值
+        # Set the IOU threshold
         label_iou = QLabel('IOU')
         self.spin_iou = QDoubleSpinBox()
         self.spin_iou.setToolTip('NMS IoU threshold')
@@ -170,7 +170,7 @@ class SettingsDialog(QDialog):
         self.check_dnn.setChecked(gb.get_config('dnn', False))
 
     def save_settings(self):
-        """更新配置"""
+        """update Configuration"""
         config = {
             'weights': self.line_weights.text(),
             'device': self.line_device.text(),
@@ -187,7 +187,7 @@ class SettingsDialog(QDialog):
         self.accept()
 
     def restore(self):
-        """恢复原配置"""
+        """Restore the original configuration"""
         self.load_settings()
         self.reject()
 

@@ -19,13 +19,13 @@ class WidgetConfig(QWidget):
 
         grid1 = QGridLayout()
 
-        # 使用默认摄像头复选框
+        # Default Camera checkbox
         self.check_camera = QCheckBox('Use default camera')
         self.check_camera.setChecked(gb.get_config('use_camera', True))
         self.check_camera.stateChanged.connect(self.slot_check_camera)
         grid1.addWidget(self.check_camera, 0, 0, 1, 4)
 
-        # 选择视频文件
+        # Select video files video files
         label_video = QLabel('Source')
         self.line_video = QLineEdit()
         self.line_video.setText(gb.get_config('video', ''))
@@ -45,7 +45,7 @@ class WidgetConfig(QWidget):
         grid1.addWidget(self.line_video, 1, 1, 1, 2)
         grid1.addWidget(self.btn_video, 1, 3)
 
-        # 视频录制
+        # Video recording
         self.check_record = QCheckBox('Record video')
         self.check_record.setChecked(gb.get_config('record', True))
         self.check_record.stateChanged.connect(
@@ -76,7 +76,7 @@ class WidgetConfig(QWidget):
             self.btn_video.setEnabled(True)
 
     def choose_video_file(self):
-        """从系统中选择视频文件"""
+        """Select local video file"""
         file = QFileDialog.getOpenFileName(self, "Video Files", "./",
                                            "Video Files (*)")
         if file[0] != '':

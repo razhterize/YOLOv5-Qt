@@ -59,11 +59,12 @@ class YOLO5:
                    half=True,  # use FP16 half-precision inference
                    dnn=False  # use OpenCV DNN for ONNX inference
                    ) -> (bool, str):
-        """检查参数的正确性并设置参数，参数改变后需要重新设置"""
-        # 判断weights文件是否真实存在
+
+        """Check for correct parameters"""
+        # Determine whether the weights file is valid
         if not os.path.exists(weights):
-            return False, f'Weights文件不存在: {weights}'
-        # 判断文件名后缀是否合法
+            return False, f'Weights file does not exist: {weights}'
+        # Determine whether the file name suffix is legal
         suffix = Path(weights).suffix.lower()
         suffixes = ['.pt', '.onnx', '.tflite', '.pb', '']
         if suffix not in suffixes:
@@ -80,29 +81,29 @@ class YOLO5:
         elif suffix == '':
             self.is_saved_model = True
 
-        # 判断device设置是否正确
+        # Determine whether the Device settings are correct
         if re.match(r'^[0-3](,[0-3]){0,3}$', device):
             if not torch.cuda.is_available():
-                return False, 'CUDA当前无法使用！请将CUDA device设置为"cpu"！'
+                return False, 'CUDA device unavailable！ Using CPU'
             else:
                 for c in ['0', '1', '2', '3']:
                     if device.count(c) > 1:
-                        return False, 'CUDA device 配置错误！'
+                        return False, 'CUDA device Configuration error！'
         elif device != 'cpu':
-            return False, 'CUDA device 配置错误！'
+            return False, 'CUDA device Configuration error！'
 
         # img_size是否64的整数倍
         if img_size % 64 != 0:
-            return False, 'Image Size应为64的倍数！'
+            return False, 'Image size should be multiple of 64！'
 
         if conf <= 0 or conf >= 1:
-            return False, 'Confidence阈值应处于(0, 1)之间！'
+            return False, 'Confidence threesold should be between 0 and 1！'
 
         if iou <= 0 or iou >= 1:
-            return False, 'IOU阈值应处于(0, 1)之间！'
+            return False, 'IOU threesold should be between 0 and 1！'
 
         if half and device == 'cpu':
-            return False, '当前CUDA device配置为"cpu"，Half不可用！'
+            return False, 'Device configuration is CPU! Half is not available'
 
         # 初始化配置
         self.opt = {
@@ -120,7 +121,7 @@ class YOLO5:
         return True, ''
 
     def load_model(self):
-        """加载模型，参数改变后需要重新加载模型"""
+        """Load the model, the model needs to be reloaded after the parameter changes"""
         # Initialize
         self.device = select_device(self.opt['device'])
         half = self.opt.get('half') and self.device.type != 'cpu'  # half precision only supported on CUDA
