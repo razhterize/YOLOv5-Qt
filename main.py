@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
         self.btn_lighting.setFixedHeight(60)
         self.btn_lighting.setIconSize(QSize(100,50))
         self.btn_lighting.setIcon(QIcon('img/light-off.png'))
-        self.btn_lighting.clicked.connect(self.light)    
+        self.btn_lighting.clicked.connect(self.light)
 
         self.load_model_thread = threading.Thread(target=self.load_yolo)
         self.load_model_thread.start()
@@ -160,6 +160,7 @@ class MainWindow(QMainWindow):
                 self.camera.start_detect()
                 self.update_info()
                 self.btn_capture.setEnabled(True)
+                threading.Thread(target=self.object_list).start()
     
     def load_yolo(self):
         # --- Reload YOLO Model --- #
@@ -228,7 +229,7 @@ class MainWindow(QMainWindow):
         YOLOGGER.info('Start update and print fps')
         while self.camera.detecting:
             self.label_fps.setText(f'Detection FPS: { "" if self.camera.fps <= 0 else round(self.camera.fps, 1)}')
-            sleep(0.2)
+            sleep(0.1)
         YOLOGGER.info('Stop update and print fps')
     
     def resizeEvent(self, event):

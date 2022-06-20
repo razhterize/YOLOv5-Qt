@@ -65,7 +65,7 @@ def init_config():
 def record_config(_dict):
     """Write setting parameter to a local config file"""
     global CONFIG
-    # 更新配置
+    # Update configuration
     for k, v in _dict.items():
         CONFIG[k] = v
     if not os.path.exists('config'):

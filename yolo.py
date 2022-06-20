@@ -25,7 +25,7 @@ except pkg.DistributionNotFound as error:
 
 class YOLO5:
     def __init__(self):
-        self.opt = dict()  # 配置信息
+        self.opt = dict()  # Configuration information
 
         self.model = None
         self.net = None
@@ -92,7 +92,7 @@ class YOLO5:
         elif device != 'cpu':
             return False, 'CUDA device Configuration error！'
 
-        # img_size是否64的整数倍
+        # img_size is an integer multiple of 64
         if img_size % 64 != 0:
             return False, 'Image size should be multiple of 64！'
 
@@ -105,7 +105,7 @@ class YOLO5:
         if half and device == 'cpu':
             return False, 'Device configuration is CPU! Half is not available'
 
-        # 初始化配置
+        # Config Init
         self.opt = {
             'weights': weights,
             'device': device,
@@ -175,13 +175,13 @@ class YOLO5:
         return True
 
     def obj_detect(self, image):
-        objects = []  # 返回目标列表
+        objects = []  # Empty objects
         img_h, img_w, _ = image.shape
 
         # Padded resize
         img = letterbox(image, new_shape=self.opt['img_size'], stride=self.stride)[0]
         img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB
-        img = np.ascontiguousarray(img)  # 转换为内存连续存储的数组
+        img = np.ascontiguousarray(img)  # Converted to the array of continuous storage of memory
         if self.is_onnx:
             img = img.astype('float32')
         else:
@@ -246,9 +246,9 @@ class YOLO5:
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    xyxy = [xy.item() for xy in xyxy]  # tensor列表转为一般列表
+                    xyxy = [xy.item() for xy in xyxy]  # Tensorflow List to general list
                     xywh = [xyxy[0] / img_w, xyxy[1] / img_h,
-                            (xyxy[2] - xyxy[0]) / img_w, (xyxy[3] - xyxy[1]) / img_h]  # 转相对于宽高的坐标
+                            (xyxy[2] - xyxy[0]) / img_w, (xyxy[3] - xyxy[1]) / img_h]  # Turn on the coordinates of wide heights
                     objects.append({'class': self.names[int(cls)], 'color': self.colors[int(cls)],
                                     'confidence': conf.item(), 'x': xywh[0], 'y': xywh[1], 'w': xywh[2], 'h': xywh[3]})
         return objects
