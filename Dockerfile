@@ -4,4 +4,6 @@ ARG volume /tmp/.X11-unix:/tmp/.X11-unix
 ARG network host
 ARG environtment DISPLAY:${DISPLAY}
 
-CMD [ "python3", "main.py"]
+WORKDIR /app
+COPY yolov5qt/ /app/
+CMD ["python3", "main.py"]
