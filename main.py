@@ -1,3 +1,4 @@
+#!/home/razh/python/ta/bin/python
 import sys
 import threading
 import platform
@@ -160,7 +161,6 @@ class MainWindow(QMainWindow):
                 self.camera.start_detect()
                 self.update_info()
                 self.btn_capture.setEnabled(True)
-                threading.Thread(target=self.object_list).start()
     
     def load_yolo(self):
         # --- Reload YOLO Model --- #
