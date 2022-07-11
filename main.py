@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import sys
 import threading
 import platform
@@ -35,7 +36,7 @@ class MainWindow(QMainWindow):
             sys.exit()
 
         self.setWindowTitle(f'{APP_NAME} {APP_VERSION}')
-        self.setWindowIcon(QIcon('img/yologo.png'))
+        self.setWindowIcon(QIcon('img/logo.png'))
 
         gb.init_logger()
         gb.clean_log()
@@ -233,6 +234,7 @@ class MainWindow(QMainWindow):
         self.update()
 
     def closeEvent(self, event):
+        self.jetson.clean()
         if self.camera.cap.isOpened():
             self.camera.close_camera()
 

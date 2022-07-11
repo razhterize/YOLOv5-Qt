@@ -152,6 +152,8 @@ class WidgetCamera(QWidget):
             msg.exec()
 
     def image_capture(self):
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
         img_name = f"{self.path}/capture_{self.x}.png"
         img = QPixmap(self.grab(QRect(0,0, self.sw, self.sh)))
         QPixmap.save(img, img_name, "JPEG", 100)
@@ -230,7 +232,12 @@ class WidgetCamera(QWidget):
             pen.setWidth(2)  # 边框宽度
             for obj in self.objects:
                 rgb = [round(c) for c in obj['color']]
-                pen.setColor(QColor(rgb[0], rgb[1], rgb[2]))  # 边框颜色
+                if str(obj['class']) == "bad":
+                    pen.setColor(QColor(255,0,0))
+                elif str(obj['class']) == "good":
+                    pen.setColor(QColor(0,255,0))
+                else:
+                    pen.setColor(QColor(rgb[0], rgb[1], rgb[2]))  # 边框颜色
                 qp.setPen(pen)
                 self.ox, self.oy = px + round(pw * obj['x']), py + round(ph * obj['y'])
                 self.ow, self.oh = round(pw * obj['w']), round(ph * obj['h'])

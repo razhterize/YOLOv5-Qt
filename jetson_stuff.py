@@ -35,3 +35,5 @@ class Jetson():
             x = 'full'
         return x
         
+    def clean(self):
+        GPIO.cleanup()
